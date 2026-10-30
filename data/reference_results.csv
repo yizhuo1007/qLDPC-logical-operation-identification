@@ -1,0 +1,4 @@
+case,candidates,interface,bayes_accuracy_exact,strict_unique_accuracy_exact
+automorphism-code_18_4_2-q4-marker-ideal,625,SEC_AFTER_EACH_AUTO,1,1
+pauli-measurement-code_18_4_2-ideal-exact,15,BB_PLUS_EDGE,67/120,497/1920
+t-injection-code_18_4_2-ideal-exact,6,BB_BOUNDARY,593/768,107/192

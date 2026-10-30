@@ -1,0 +1,572 @@
+{
+  "fixture_id": "bb_t1_phase1",
+  "n": 18,
+  "k": 4,
+  "d": 2,
+  "rank_Hx": 7,
+  "rank_Hz": 7,
+  "distance_verification": {
+    "X": {
+      "distance": 2,
+      "witness_support": [
+        0,
+        1
+      ],
+      "lower_bound_method": "all weight <= 0 syndrome collisions against all weight <= 1; every weight <= 1 normalizer belongs to stabilizers",
+      "collision_pairs_checked": 1
+    },
+    "Z": {
+      "distance": 2,
+      "witness_support": [
+        9,
+        10
+      ],
+      "lower_bound_method": "all weight <= 0 syndrome collisions against all weight <= 1; every weight <= 1 normalizer belongs to stabilizers",
+      "collision_pairs_checked": 1
+    }
+  },
+  "Hx_row_supports": [
+    [
+      0,
+      1,
+      3,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      9,
+      10,
+      11
+    ],
+    [
+      0,
+      2,
+      5,
+      9,
+      10,
+      11
+    ],
+    [
+      3,
+      4,
+      6,
+      12,
+      13,
+      14
+    ],
+    [
+      4,
+      5,
+      7,
+      12,
+      13,
+      14
+    ],
+    [
+      3,
+      5,
+      8,
+      12,
+      13,
+      14
+    ],
+    [
+      0,
+      6,
+      7,
+      15,
+      16,
+      17
+    ],
+    [
+      1,
+      7,
+      8,
+      15,
+      16,
+      17
+    ],
+    [
+      2,
+      6,
+      8,
+      15,
+      16,
+      17
+    ]
+  ],
+  "Hz_row_supports": [
+    [
+      0,
+      1,
+      2,
+      9,
+      11,
+      15
+    ],
+    [
+      0,
+      1,
+      2,
+      9,
+      10,
+      16
+    ],
+    [
+      0,
+      1,
+      2,
+      10,
+      11,
+      17
+    ],
+    [
+      3,
+      4,
+      5,
+      9,
+      12,
+      14
+    ],
+    [
+      3,
+      4,
+      5,
+      10,
+      12,
+      13
+    ],
+    [
+      3,
+      4,
+      5,
+      11,
+      13,
+      14
+    ],
+    [
+      6,
+      7,
+      8,
+      12,
+      15,
+      17
+    ],
+    [
+      6,
+      7,
+      8,
+      13,
+      15,
+      16
+    ],
+    [
+      6,
+      7,
+      8,
+      14,
+      16,
+      17
+    ]
+  ],
+  "independent_X_stabilizer_basis": [
+    [
+      0,
+      8,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    [
+      1,
+      7,
+      8,
+      15,
+      16,
+      17
+    ],
+    [
+      2,
+      7,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    [
+      3,
+      7,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    [
+      4,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    [
+      5,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      6,
+      7,
+      8,
+      12,
+      13,
+      14
+    ]
+  ],
+  "independent_Z_stabilizer_basis": [
+    [
+      0,
+      1,
+      2,
+      15,
+      16,
+      17
+    ],
+    [
+      3,
+      4,
+      5,
+      11,
+      15,
+      17
+    ],
+    [
+      6,
+      7,
+      8,
+      14,
+      16,
+      17
+    ],
+    [
+      9,
+      11,
+      16,
+      17
+    ],
+    [
+      10,
+      11,
+      15,
+      16
+    ],
+    [
+      12,
+      14,
+      15,
+      16
+    ],
+    [
+      13,
+      14,
+      15,
+      17
+    ]
+  ],
+  "frozen_logical_basis": {
+    "X_row_supports": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        0,
+        3,
+        10,
+        12,
+        13,
+        15
+      ],
+      [
+        0,
+        6,
+        9,
+        10,
+        12,
+        16
+      ]
+    ],
+    "Z_row_supports": [
+      [
+        0,
+        2,
+        5,
+        7,
+        8,
+        10
+      ],
+      [
+        0,
+        1,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        3,
+        4,
+        5,
+        10
+      ]
+    ],
+    "generator_order": "X0..X(k-1),Z0..Z(k-1)",
+    "basis_choice": "existing E9 deterministic quotient basis"
+  },
+  "qubit_labels": [
+    "L(0,0)",
+    "L(0,1)",
+    "L(0,2)",
+    "L(1,0)",
+    "L(1,1)",
+    "L(1,2)",
+    "L(2,0)",
+    "L(2,1)",
+    "L(2,2)",
+    "R(0,0)",
+    "R(0,1)",
+    "R(0,2)",
+    "R(1,0)",
+    "R(1,1)",
+    "R(1,2)",
+    "R(2,0)",
+    "R(2,1)",
+    "R(2,2)"
+  ],
+  "coordinate_convention": "source [L|R], q(u,v)=u*m+v, symplectic [x|z], p[old]=new",
+  "pauli_phase_convention": "i^p X^x Z^z; Y=iXZ; logical port Y=i X_port Z_port; put an overall candidate minus sign on the root Gauss channel",
+  "selected_ports": {
+    "Xa": {
+      "x_support": [
+        0,
+        1
+      ],
+      "z_support": [],
+      "sign": 1,
+      "pauli": "+XXIIIIIIIIIIIIIIII",
+      "frozen_basis_logical_pauli": "+XIII",
+      "frozen_basis_coordinates_X_then_Z": "10000000",
+      "stabilizer_reduction_x_coefficients": [],
+      "stabilizer_reduction_z_coefficients": [],
+      "phase_of_product_with_frozen_representative_i_power": 0
+    },
+    "Za": {
+      "x_support": [],
+      "z_support": [
+        1,
+        5,
+        6,
+        10,
+        14,
+        15
+      ],
+      "sign": 1,
+      "pauli": "+IZIIIZZIIIZIIIZZII",
+      "frozen_basis_logical_pauli": "+ZIII",
+      "frozen_basis_coordinates_X_then_Z": "00001000",
+      "stabilizer_reduction_x_coefficients": [],
+      "stabilizer_reduction_z_coefficients": [
+        0,
+        2
+      ],
+      "phase_of_product_with_frozen_representative_i_power": 0
+    },
+    "Xb": {
+      "x_support": [
+        1,
+        5,
+        6,
+        10,
+        14,
+        15
+      ],
+      "z_support": [],
+      "sign": 1,
+      "pauli": "+IXIIIXXIIIXIIIXXII",
+      "frozen_basis_logical_pauli": "+IIXI",
+      "frozen_basis_coordinates_X_then_Z": "00100000",
+      "stabilizer_reduction_x_coefficients": [
+        0,
+        1,
+        3,
+        5,
+        6
+      ],
+      "stabilizer_reduction_z_coefficients": [],
+      "phase_of_product_with_frozen_representative_i_power": 0
+    },
+    "Zb": {
+      "x_support": [],
+      "z_support": [
+        9,
+        10
+      ],
+      "sign": 1,
+      "pauli": "+IIIIIIIIIZZIIIIIII",
+      "frozen_basis_logical_pauli": "+IIZI",
+      "frozen_basis_coordinates_X_then_Z": "00000010",
+      "stabilizer_reduction_x_coefficients": [],
+      "stabilizer_reduction_z_coefficients": [],
+      "phase_of_product_with_frozen_representative_i_power": 0
+    }
+  },
+  "selection": {
+    "logical_indices_zero_based": [
+      0,
+      2
+    ],
+    "union_size": 8,
+    "total_weight": 16,
+    "search": "all 2^18 union masks and all 128 same-type stabilizer multiples per fixed basis representative; exact global lexicographic objective"
+  },
+  "automorphisms": {
+    "x": {
+      "registered_id": "bb_t1_phase1/full_group/g(1,0)",
+      "element": [
+        1,
+        0
+      ],
+      "physical_old_to_new": [
+        6,
+        7,
+        8,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        15,
+        16,
+        17,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "logical_action_rows_output_by_input": [
+        "11000000",
+        "10000000",
+        "00010000",
+        "00110000",
+        "00000100",
+        "00001100",
+        "00000011",
+        "00000010"
+      ],
+      "basis_generator_logical_images": [
+        "+XXII",
+        "+XIII",
+        "+IIIX",
+        "+IIXX",
+        "+IZII",
+        "+ZZII",
+        "+IIZZ",
+        "+IIZI"
+      ],
+      "bridge_to_frozen_coordinate_intertwiner_verified": true,
+      "chosen_two_port_space_invariant": false,
+      "two_port_generator_images_if_in_span": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    "y": {
+      "registered_id": "bb_t1_phase1/full_group/g(0,1)",
+      "element": [
+        0,
+        1
+      ],
+      "physical_old_to_new": [
+        2,
+        0,
+        1,
+        5,
+        3,
+        4,
+        8,
+        6,
+        7,
+        11,
+        9,
+        10,
+        14,
+        12,
+        13,
+        17,
+        15,
+        16
+      ],
+      "logical_action_rows_output_by_input": [
+        "01000000",
+        "11000000",
+        "00110000",
+        "00100000",
+        "00001100",
+        "00001000",
+        "00000001",
+        "00000011"
+      ],
+      "basis_generator_logical_images": [
+        "+IXII",
+        "+XXII",
+        "+IIXX",
+        "+IIXI",
+        "+ZZII",
+        "+ZIII",
+        "+IIIZ",
+        "+IIZZ"
+      ],
+      "bridge_to_frozen_coordinate_intertwiner_verified": true,
+      "chosen_two_port_space_invariant": false,
+      "two_port_generator_images_if_in_span": [
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  },
+  "mandatory_check_1": "PASS: ranks, k and exact CSS d",
+  "mandatory_check_2": "PASS: frozen logical basis, selected canonical pair, all 15 nontrivial normalizer classes"
+}

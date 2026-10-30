@@ -1,0 +1,58 @@
+{
+  "candidates": [
+    "I_ZI_XI",
+    "I_ZI_IX",
+    "I_YI_XI",
+    "I_YI_IX",
+    "g_ZI_XI",
+    "g_ZI_IX",
+    "g_YI_XI",
+    "g_YI_IX"
+  ],
+  "basis_if_m1": [
+    "YI",
+    "IX",
+    "ZI",
+    "IX",
+    "YZ",
+    "ZY",
+    "ZZ",
+    "YY"
+  ],
+  "stages": [
+    "INITIAL_SEC",
+    "MARKER",
+    "AUTO1",
+    "AUTO1_SEC",
+    "T_O",
+    "T_G1",
+    "T_F1",
+    "T_D1",
+    "T_G2",
+    "T_F2",
+    "T_D2",
+    "T_E",
+    "T_P",
+    "T_n",
+    "AUTO2",
+    "AUTO2_SEC",
+    "PM_O",
+    "PM_G1",
+    "PM_F1",
+    "PM_D1",
+    "PM_G2",
+    "PM_F2",
+    "PM_D2",
+    "PM_E",
+    "PM_P"
+  ],
+  "low_fault_rates": {
+    "1q": 1e-05,
+    "CX": 0.0001,
+    "reset": 5e-05,
+    "measurement": 0.0001,
+    "idle": 1e-05
+  },
+  "state_budget": 4096,
+  "code": "[[18,4,2]]"
+}

@@ -1,0 +1,16 @@
+candidate,physical_pauli,physical_weight,physical_x_support,physical_z_support,frozen_logical_pauli,gauss_root_sign,nonempty_matchings,raw_post_syndrome_dimension,gauss_dimension,edge_dimension,full_support_dimension
+XI,+XXIIIIIIIIIIIIIIII,2,"[0, 1]",[],+XIII,1,3,1,8,7,15
+YI,+XYIIIZZIIIZIIIZZII,7,"[0, 1]","[1, 5, 6, 10, 14, 15]",+YIII,1,12,6,8,7,15
+ZI,+IZIIIZZIIIZIIIZZII,6,[],"[1, 5, 6, 10, 14, 15]",+ZIII,1,9,5,8,7,15
+IX,+IXIIIXXIIIXIIIXXII,6,"[1, 5, 6, 10, 14, 15]",[],+IIXI,1,9,5,8,7,15
+IY,+IXIIIXXIIZYIIIXXII,7,"[1, 5, 6, 10, 14, 15]","[9, 10]",+IIYI,1,12,6,8,7,15
+IZ,+IIIIIIIIIZZIIIIIII,2,[],"[9, 10]",+IIZI,1,3,1,8,7,15
+XX,+XIIIIXXIIIXIIIXXII,6,"[0, 5, 6, 10, 14, 15]",[],+XIXI,1,9,5,8,7,15
+XY,+XIIIIXXIIZYIIIXXII,7,"[0, 5, 6, 10, 14, 15]","[9, 10]",+XIYI,1,12,6,8,7,15
+XZ,+XXIIIIIIIZZIIIIIII,4,"[0, 1]","[9, 10]",+XIZI,1,6,2,8,7,15
+YX,+XZIIIYYIIIYIIIYYII,7,"[0, 5, 6, 10, 14, 15]","[1, 5, 6, 10, 14, 15]",+YIXI,1,18,6,8,7,15
+YY,-XZIIIYYIIZXIIIYYII,8,"[0, 5, 6, 10, 14, 15]","[1, 5, 6, 9, 14, 15]",+YIYI,-1,18,7,8,7,15
+YZ,+XYIIIZZIIZIIIIZZII,7,"[0, 1]","[1, 5, 6, 9, 14, 15]",+YIZI,1,12,6,8,7,15
+ZX,-IYIIIYYIIIYIIIYYII,6,"[1, 5, 6, 10, 14, 15]","[1, 5, 6, 10, 14, 15]",+ZIXI,-1,18,5,8,7,15
+ZY,+IYIIIYYIIZXIIIYYII,7,"[1, 5, 6, 10, 14, 15]","[1, 5, 6, 9, 14, 15]",+ZIYI,1,18,6,8,7,15
+ZZ,+IZIIIZZIIZIIIIZZII,6,[],"[1, 5, 6, 9, 14, 15]",+ZIZI,1,9,5,8,7,15
