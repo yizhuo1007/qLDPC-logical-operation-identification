@@ -110,63 +110,48 @@ The noisy automorphism option sums independent X and Z faults exactly over the 1
 ## Repository Layout
 
 ```text
-qLDPC-logical-operation-identification/ {
-  README.md
-  pyproject.toml
-  LICENSE
-  examples/ {
-    automorphism.py
-    pauli_measurement.py
-    t_injection.py
-    full_circuit.py
-    reproduce_population.py
-    evaluate_scores.py
-  }
-  src/ {
-    qldpc_identification/ {
-      codes.py
-      models/ {
-        automorphism.py
-        pauli_measurement.py
-        t_injection.py
-      }
-      inference/ {
-        exact.py
-        noisy_automorphism.py
-        scalable_*.py
-        _*.py
-      }
-    }
-  }
-  data/ {
-    code_18_4_2/ {
-      *.json
-      *.csv
-      *.npz
-      mixed_models/ {
-        *.json.gz
-      }
-    }
-    code_72_12_6/ {
-      bv/ {
-        *.stim
-        *.json
-        *.csv
-        *.npz
-      }
-    }
-    reference_results.csv
-  }
-  tests/ {
-    test_ideal.py
-    slow_reference.py
-  }
-  .github/ {
-    workflows/ {
-      tests.yml
-    }
-  }
-}
+qLDPC-logical-operation-identification/
+├── README.md
+├── LICENSE
+├── pyproject.toml
+├── examples/
+│   ├── automorphism.py
+│   ├── pauli_measurement.py
+│   ├── t_injection.py
+│   ├── full_circuit.py
+│   ├── reproduce_population.py
+│   └── evaluate_scores.py
+├── src/
+│   └── qldpc_identification/
+│       ├── codes.py
+│       ├── models/
+│       │   ├── automorphism.py
+│       │   ├── pauli_measurement.py
+│       │   └── t_injection.py
+│       └── inference/
+│           ├── exact.py
+│           ├── noisy_automorphism.py
+│           ├── scalable_*.py
+│           └── _*.py
+├── data/
+│   ├── code_18_4_2/
+│   │   ├── mixed_models/*.json.gz
+│   │   ├── *.json
+│   │   ├── *.csv
+│   │   └── *.npz
+│   ├── code_72_12_6/
+│   │   └── bv/
+│   │       ├── *.stim
+│   │       ├── *.json
+│   │       ├── *.csv
+│   │       └── *.npz
+│   └── reference_results.csv
+├── tests/
+│   ├── test_ideal.py
+│   └── slow_reference.py
+└── .github/
+    └── workflows/
+        └── tests.yml
 ```
 
 ## Tests
