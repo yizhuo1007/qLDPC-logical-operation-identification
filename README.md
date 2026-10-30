@@ -110,29 +110,64 @@ The noisy automorphism option sums independent X and Z faults exactly over the 1
 ## Repository Layout
 
 ```text
-README.md                  Overview and runnable commands
-pyproject.toml             Python package and NumPy dependency
-LICENSE                    MIT license
-examples/                  Four task-family entry points and optional evaluation scripts
-src/qldpc_identification/
-  codes.py                  GF(2) checks for the [[18,4,2]] fixture
-  models/                  Candidate and ideal experiment models
-  inference/               Exact, scalable, and bounded scoring implementations
-data/code_18_4_2/          Automorphism and ideal PM/T inputs; LOW noisy models and observations
-data/code_72_12_6/bv/      BV LOW MARKER circuit inputs, histories, and labels
-data/reference_results.csv Ideal reference values
-tests/test_ideal.py        Fast scientific and noisy-query checks
-tests/slow_reference.py    Optional BV/mixed numerical reference checks
-.github/workflows/tests.yml Linux quick-test workflow
+qLDPC-logical-operation-identification/ {
+  README.md
+  pyproject.toml
+  LICENSE
+  examples/ {
+    automorphism.py
+    pauli_measurement.py
+    t_injection.py
+    full_circuit.py
+    reproduce_population.py
+    evaluate_scores.py
+  }
+  src/ {
+    qldpc_identification/ {
+      codes.py
+      models/ {
+        automorphism.py
+        pauli_measurement.py
+        t_injection.py
+      }
+      inference/ {
+        exact.py
+        noisy_automorphism.py
+        scalable_*.py
+        _*.py
+      }
+    }
+  }
+  data/ {
+    code_18_4_2/ {
+      *.json
+      *.csv
+      *.npz
+      mixed_models/ {
+        *.json.gz
+      }
+    }
+    code_72_12_6/ {
+      bv/ {
+        *.stim
+        *.json
+        *.csv
+        *.npz
+      }
+    }
+    reference_results.csv
+  }
+  tests/ {
+    test_ideal.py
+    slow_reference.py
+  }
+  .github/ {
+    workflows/ {
+      tests.yml
+    }
+  }
+}
 ```
-
-## Example Data and Scientific Scope
-
-The repository includes small code and model fixtures, selected precompiled fault factors, and 1,024 public noisy observation records for each released noisy workload. The separate truth CSVs support offline evaluation, but generating labels and terminal algorithm answers are **not** used by the scorers.
-
-The BV scorer reads syndrome histories without using the terminal Bernstein-Vazirani answer. The mixed scorer conditions each hypothesis on the measurement basis selected by the observed prefix, evaluates the chronological record, and combines positive magic-state sectors. Unobserved outcomes are treated according to the stated candidate likelihood, rather than silently fixed to zero.
-
-This release is intentionally limited to representative examples. It does **not** include all noise profiles, workloads, ablation studies, complete paper figures, cluster execution infrastructure, or full experimental provenance. The released models demonstrate the methods under specified assumptions rather than establish accuracy for arbitrary physical hardware.
 
 ## Tests
 
