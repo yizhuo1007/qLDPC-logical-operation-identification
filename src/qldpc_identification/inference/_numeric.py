@@ -1,12 +1,39 @@
 """Directed floating-point arithmetic and GF(2) helpers for count-aware inference."""
 
 from __future__ import annotations
-import resource
 import sys
 import time
 from dataclasses import dataclass
 from fractions import Fraction
 import numpy as np
+
+if sys.platform == "win32":
+    import ctypes
+    from ctypes import wintypes
+
+    class _ProcessMemoryCounters(ctypes.Structure):
+        _fields_ = [
+            ("cb", wintypes.DWORD),
+            ("PageFaultCount", wintypes.DWORD),
+            ("PeakWorkingSetSize", ctypes.c_size_t),
+            ("WorkingSetSize", ctypes.c_size_t),
+            ("QuotaPeakPagedPoolUsage", ctypes.c_size_t),
+            ("QuotaPagedPoolUsage", ctypes.c_size_t),
+            ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t),
+            ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
+            ("PagefileUsage", ctypes.c_size_t),
+            ("PeakPagefileUsage", ctypes.c_size_t),
+        ]
+
+    _get_current_process = ctypes.WinDLL("kernel32", use_last_error=True).GetCurrentProcess
+    _get_current_process.restype = wintypes.HANDLE
+    _get_process_memory_info = ctypes.WinDLL("psapi", use_last_error=True).GetProcessMemoryInfo
+    _get_process_memory_info.argtypes = (
+        wintypes.HANDLE, ctypes.POINTER(_ProcessMemoryCounters), wintypes.DWORD
+    )
+    _get_process_memory_info.restype = wintypes.BOOL
+else:
+    import resource
 
 TIME_LIMIT = 3600
 MEMORY_LIMIT = 12 * 2**30
@@ -26,6 +53,12 @@ class ModelStop(RuntimeError):
 
 
 def peak_rss():
+    if sys.platform == "win32":
+        counters = _ProcessMemoryCounters()
+        counters.cb = ctypes.sizeof(counters)
+        if not _get_process_memory_info(_get_current_process(), ctypes.byref(counters), counters.cb):
+            raise ctypes.WinError(ctypes.get_last_error())
+        return counters.PeakWorkingSetSize
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * (1 if sys.platform == "darwin" else 1024)
 
 

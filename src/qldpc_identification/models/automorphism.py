@@ -1,4 +1,4 @@
-"""[[18,4,2]] four-step automorphism words with a known Y0 marker."""
+"""[[18,4,2]] four-step automorphism sequences with a known Y0 marker."""
 
 from __future__ import annotations
 

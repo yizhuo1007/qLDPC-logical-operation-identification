@@ -2,23 +2,23 @@
 
 Reference implementation and runnable Python examples for identifying executed logical operations and logical circuits from classical measurement outcomes.
 
-**Paper:** [*Identifying Logical Operations from Syndrome Histories for qLDPC Codes*](https://arxiv.org/abs/2610.40052)  
-**Authors:** Yizhuo Tan, Shifan Xu, Yongshan Ding, and Jakub Szefer  
-**Preprint:** arXiv:2610.40052 (2026)
+- **Paper:** [*Identifying Logical Operations from Syndrome Histories for qLDPC Codes*](https://arxiv.org/abs/2610.40052)
+- **Authors:** Yizhuo Tan, Shifan Xu, Yongshan Ding, and Jakub Szefer
+- **Preprint:** arXiv:2610.40052 (2026)
 
-> **Scope.** This is a lightweight method reference implementation, not a complete reproduction package for the paper's large-scale experiments. The examples run on a conventional CPU and do not require quantum hardware, device calibration data, a GPU, or an HPC cluster.
+> **Scope.** This is a lightweight method reference implementation, not a complete reproduction package for the paper's large-scale experiments.
 
 ## Overview
 
 Classical measurement outcomes collected during quantum error correction can reveal information about which logical operations were executed. This repository demonstrates how to construct supported candidate models, evaluate the observed syndrome or auxiliary-measurement history under each candidate, and infer a logical operation or ordered logical circuit.
 
-The release covers exact inference on selected finite models and scalable likelihood approximations on saved noisy observations. Its code and data are organized around two BB codes, `[[18,4,2]]` and `[[72,12,6]]`. The selected fault and observation models are documented below. This repository does not claim to model arbitrary qLDPC codes or physical devices.
+The release covers exact inference on selected finite models and scalable likelihood approximations on saved noisy observations. Its code and data are organized around two BB codes, `[[18,4,2]]` and `[[72,12,6]]`. The selected fault and observation models are documented below.
 
 ## Supported Examples
 
 | Task | Code and setting | Method | Candidates |
 | --- | --- | --- | ---: |
-| Automorphism words | `[[18,4,2]]`, four operations, known `Y0` marker, SEC after every operation | Exact ideal and noisy syndrome summation | 625 |
+| Automorphism | `[[18,4,2]]`, four operations, known `Y0` marker, SEC after every operation | Exact ideal and noisy syndrome summation | 625 |
 | Logical Pauli measurement | `[[18,4,2]]`, ideal and LOW noisy | Exact branch sum and count-aware scalable likelihood | 15 |
 | T-injection measurement axis | `[[18,4,2]]`, ideal and LOW noisy | Exact branch sum and count-aware MP-JP likelihood | 6 |
 | Bernstein–Vazirani circuit | `[[72,12,6]]`, LOW noise, known `Y0` marker | Local order-two fault factors with a 1024-state frontier | 4 |
@@ -32,7 +32,6 @@ The ideal PM and T examples evaluate a complete, finite branch space using exact
 
 - Python **3.12** (as specified in `pyproject.toml`)
 - NumPy (installed automatically with the package)
-- A conventional CPU. No GPU, quantum processor, cluster scheduler, or cloud credentials are required.
 
 The current automated checks run on Linux. Other operating systems have not yet been verified.
 
@@ -81,16 +80,17 @@ Every example follows the same overall workflow:
 1. Load the supported code, circuit, and candidate-operation definitions.
 2. Generate or load classical measurement observations.
 3. Calculate candidate-dependent likelihoods or approximate scores using only the specified observation channels.
-4. Return candidate scores, point winners, and likelihood bounds where available.
+4. Return candidate scores, MAP recovery targets, and likelihood bounds where available.
 
 The scripts call the actual implementations in `src/qldpc_identification/`. For more expensive examples, precompiled response models are included so visitors can run the inference without regenerating large physical models. The scripts do **not** simply look up precomputed final candidate decisions.
 
 ### Interpreting the Output
 
-- **Automorphism word versus logical action:** physical sequences and their induced logical actions are different possible recovery targets. The included four-operation example identifies physical words under its chosen marker and SEC schedule.
+- **Automorphism versus logical action:** physical sequences and their induced logical actions are different possible recovery targets. The included four-operation example identifies physical sequences under its chosen marker and SEC schedule.
 - **Ordered circuit versus net action:** an ordered circuit retains operation order, whereas a net action may identify multiple sequences as equivalent.
-- **Point winner:** the highest-scoring candidate under the evaluated model. A scalable point winner is not necessarily an exact decision.
-- **Certified winner:** for examples with full-likelihood intervals, certification requires the winner's lower bound to be strictly greater than every competitor's upper bound.
+- **MAP recovery target:** for observation $o$, the paper scores target $c=\tau(h)$ by $Z_c(o)=\sum_{h:\tau(h)=c}\pi(h)P(o\mid h)$ and selects a target maximizing $Z_c(o)$. Strict unique identification requires the true target to be the sole maximizer. In these examples, each candidate is a distinct target with a uniform prior, so ranking candidate likelihoods gives the same decision.
+- **Scalable decision:** replacing $P(o\mid h)$ with an approximate likelihood $\widetilde{P}(o\mid h)$ gives an approximate target score $\widetilde{Z}_c(o)$ and an approximate MAP decision.
+- **Exact-model certification:** when valid bounds $Z_c^-\leq Z_c(o)\leq Z_c^+$ are available, target $c^*$ is certified as the exact MAP target if $Z_{c^*}^->\max_{c\ne c^*}Z_c^+$. The noisy PM, T, and mixed examples provide candidate likelihood bounds that induce these target bounds under their uniform priors.
 - **BV score:** an approximate normalized score, not a certified likelihood or a conventional decoding success probability.
 
 Correctly identifying the executed operation does not establish that the quantum computation itself was free of logical errors.
@@ -105,7 +105,7 @@ python examples/evaluate_scores.py --scores outputs/pm_scores.csv --truth data/c
 
 The truth CSVs are distributed for **evaluation only** and are never read by the scorers. The population script emits an approximate normalized score for BV and retained likelihoods plus full bounds for PM, T, and mixed. This workflow is optional and is not required to verify that the four example families run.
 
-The noisy automorphism option sums independent X and Z faults exactly over the 14-bit syndrome quotient with perfect SEC after each operation. It illustrates Exact-Sum inference for this selected noise model; it does not reproduce the paper's circuit-level fault curves. `--p-x` and `--p-z` set the two fault rates. The ideal automorphism example reproduces unique identification of all 625 four-operation words.
+The noisy automorphism option sums independent X and Z faults exactly over the 14-bit syndrome quotient with perfect SEC after each operation. It illustrates Exact-Sum inference for this selected noise model; it does not reproduce the paper's circuit-level fault curves. `--p-x` and `--p-z` set the two fault rates. The ideal automorphism example reproduces unique identification of all 625 four-operation sequences.
 
 ## Repository Layout
 
