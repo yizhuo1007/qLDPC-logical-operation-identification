@@ -108,7 +108,15 @@ print(result["map_winners"])
 - **Ordered circuit versus net action:** an ordered circuit retains operation order, whereas a net action may identify multiple sequences as equivalent.
 - **MAP recovery target:** for observation $o$, the paper scores target $c=\tau(h)$ by $Z_c(o)=\sum_{h:\tau(h)=c}\pi(h)P(o\mid h)$ and selects a target maximizing $Z_c(o)$. Strict unique identification requires the true target to be the sole maximizer. The default prior is uniform over physical candidates; uniform target prior divides each target's mass equally among its candidates. These priors can give different decisions.
 - **Scalable decision:** replacing $P(o\mid h)$ with an approximate likelihood $\widetilde{P}(o\mid h)$ gives an approximate target score $\widetilde{Z}_c(o)$ and an approximate MAP decision.
-- **Exact-model certification:** when valid bounds $Z_c^-\leq Z_c(o)\leq Z_c^+$ are available, target $c^*$ is certified as the exact MAP target if $Z_{c^*}^->\max_{c\ne c^*}Z_c^+$. The noisy PM, T, and mixed examples provide candidate likelihood bounds that induce these target bounds under their uniform priors.
+- **Exact-model certification:** The noisy PM, T, and mixed examples provide candidate likelihood bounds that aggregate into target bounds under the chosen prior. A target is certified as the unique exact MAP target when its lower bound exceeds every competing target's upper bound:
+
+```math
+\begin{aligned}
+Z_c^{-} &\leq Z_c(o) \leq Z_c^{+} \quad (c \in \mathcal{C}), \\
+Z_{c^{\star}}^{-} &> \max_{d \ne c^{\star}} Z_d^{+}.
+\end{aligned}
+```
+
 - **BV score:** an approximate normalized score, not a certified likelihood or a conventional decoding success probability.
 
 `inference/targets.py` accepts exact fractions, approximate candidate scores, or complete candidate likelihood intervals. With exact likelihoods, its normalized target scores are posterior probabilities; with approximations, they remain approximate normalized scores. The circuit API uses the same aggregation after evaluating every candidate. BV target scores are relative approximate scores computed from the candidate log scores. Only complete, valid full-likelihood intervals can certify an exact-model MAP target.
