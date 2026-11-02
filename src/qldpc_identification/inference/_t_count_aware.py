@@ -101,8 +101,7 @@ def build_candidate(ci, data, exact, terms, resources):
     groups = []
     for stage in range(10):
         a, b = map(int, data['stage_location_offsets'][ci, stage:stage+2])
-        # Counter preserves first physical occurrence. Keys are the COMPLETE
-        # rational distributions, never merely a support, channel or rate.
+        # Group locations by their full rational fault distributions in input order.
         counts = Counter(exact[int(fid)] for fid in data['location_factor_id'][a:b])
         for position, (key, multiplicity) in enumerate(counts.items()):
             resources.check()

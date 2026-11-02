@@ -162,8 +162,7 @@ def build_candidate(ci, data, exact, terms, resources):
     groups = []
     for stage in range(len(C)):
         a, b = map(int, data['stage_location_offsets'][ci, stage:stage+2])
-        # Counter preserves first physical occurrence. Keys are the COMPLETE
-        # rational distributions, never merely a support, channel or rate.
+        # Group locations by their full rational fault distributions in input order.
         counts = Counter(exact[int(fid)] for fid in data['location_factor_id'][a:b])
         for position, (key, multiplicity) in enumerate(counts.items()):
             resources.check()
@@ -254,7 +253,7 @@ def aggregate(keys, mass, lower, upper):
 
 
 def score(model, public_boundary, resources):
-    """Public-only candidate scorer: no truth, record ID or evaluator metadata."""
+    """Evaluate a candidate likelihood from the observed measurement boundary."""
     started = time.perf_counter()
     target = sum((sum(int(public_boundary[i]) for i in term) & 1) << j
                  for j, term in enumerate(model['term_indices']))

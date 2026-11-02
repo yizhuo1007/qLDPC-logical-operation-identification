@@ -13,7 +13,7 @@ from . import _pm_count_aware as core
 
 
 def load_prepared_model(path: Path):
-    """Load only public observations and source-derived fault response factors."""
+    """Load prepared fault-response factors and observation records."""
     with np.load(path, allow_pickle=False) as archive:
         data = {key: archive[key].copy() for key in archive.files}
     if tuple(data["candidate_labels"]) != core.CANDIDATES:

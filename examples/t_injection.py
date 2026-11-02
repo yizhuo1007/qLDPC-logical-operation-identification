@@ -10,6 +10,7 @@ from qldpc_identification.inference.exact import score_record, uniform_prior_acc
 from qldpc_identification.models.pauli_measurement import load_ideal_code_18_4_2
 from qldpc_identification.models.t_injection import AXES, ideal_axis_distributions
 from qldpc_identification.inference.scalable_t_injection import load_prepared_model, score_candidate
+from qldpc_identification.inference.targets import aggregate_targets
 
 
 def main() -> None:
@@ -46,14 +47,14 @@ def main() -> None:
         result = {"case": args.case, "code": "[[18,4,2]]", "record_index": args.record,
                   "observation_channels": 112, "candidate_likelihoods": scores}
         if len(scores) == len(AXES):
-            best = max(item["point_retained"] for item in scores)
-            winners = [item["candidate"] for item in scores if item["point_retained"] == best]
-            result["map_winners"] = winners
-            if len(winners) == 1:
-                winner = next(item for item in scores if item["candidate"] == winners[0])
-                result["full_likelihood_certified"] = winner["full_lower"] > max(
-                    item["full_upper"] for item in scores if item["candidate"] != winners[0]
-                )
+            labels = {item["candidate"]: item["candidate"] for item in scores}
+            targets = aggregate_targets(
+                {item["candidate"]: item["point_retained"] for item in scores}, labels,
+                candidate_bounds={item["candidate"]: (item["full_lower"], item["full_upper"])
+                                  for item in scores},
+            )
+            result["map_winners"] = list(targets.map_winners)
+            result["full_likelihood_certified"] = targets.certified_winner is not None
     payload = json.dumps(result, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

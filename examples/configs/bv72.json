@@ -1,0 +1,9 @@
+{
+  "name": "bv-low-marker-scalable",
+  "backend": "clifford_order2",
+  "code": "[[72,12,6]]",
+  "data_dir": "../../data/code_72_12_6/bv",
+  "candidates": ["V00", "V01", "V10", "V11"],
+  "intervals": ["PREPARATION+SEC0", "OP1+SEC1", "OP2+SEC2"],
+  "bits_per_interval": 72
+}

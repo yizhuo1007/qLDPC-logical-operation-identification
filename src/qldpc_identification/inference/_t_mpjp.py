@@ -16,7 +16,7 @@ def log_nonnegative(values):
 
 
 def score(model, public_boundary, resources):
-    """Public-only candidate scorer: no truth, record ID or evaluator metadata."""
+    """Evaluate a candidate likelihood from the observed measurement boundary."""
     started = time.perf_counter()
     target = np.zeros(3, dtype=np.uint64)
     for j, term in enumerate(model['term_indices']):

@@ -1,0 +1,10 @@
+{
+  "name": "mixed-low-marker-scalable",
+  "backend": "precompiled_mixed",
+  "code": "[[18,4,2]]",
+  "data_dir": "../../data/code_18_4_2",
+  "candidates": [
+    "I_ZI_XI", "I_ZI_IX", "I_YI_XI", "I_YI_IX",
+    "g_ZI_XI", "g_ZI_IX", "g_YI_XI", "g_YI_IX"
+  ]
+}

@@ -30,6 +30,7 @@ class AutomorphismModel:
     hx: tuple[int, ...]
     hz: tuple[int, ...]
     permutations: dict[str, tuple[int, ...]]
+    logical_actions: dict[str, tuple[int, ...]]
 
     def _permute(self, error: int, symbol: str) -> int:
         perm = self.permutations[symbol]
@@ -56,6 +57,47 @@ class AutomorphismModel:
         return (observations[0], observations[1], observations[2],
                 observations[3], observations[4])
 
+    def net_logical_action(self, word: Word) -> tuple[int, ...]:
+        """Compose the frozen-basis logical maps in execution order."""
+        action = self.logical_actions["I"]
+        for symbol in word:
+            action = _compose_binary_rows(self.logical_actions[symbol], action)
+        return action
+
+    def logical_action_id(self, word: Word) -> str:
+        rows = self.net_logical_action(word)
+        return "/".join(f"{row:0{len(rows)}b}" for row in rows)
+
+
+def _compose_binary_rows(left: tuple[int, ...], right: tuple[int, ...]) -> tuple[int, ...]:
+    size = len(left)
+    result = []
+    for row in left:
+        product = 0
+        for column in range(size):
+            if (row >> (size - 1 - column)) & 1:
+                product ^= right[column]
+        result.append(product)
+    return tuple(result)
+
+
+def _inverse_binary_rows(rows: tuple[int, ...]) -> tuple[int, ...]:
+    size = len(rows)
+    left = list(rows)
+    right = [1 << (size - 1 - i) for i in range(size)]
+    for column in range(size):
+        bit = 1 << (size - 1 - column)
+        pivot = next((i for i in range(column, size) if left[i] & bit), None)
+        if pivot is None:
+            raise ValueError("logical action is not invertible")
+        left[column], left[pivot] = left[pivot], left[column]
+        right[column], right[pivot] = right[pivot], right[column]
+        for row in range(size):
+            if row != column and left[row] & bit:
+                left[row] ^= left[column]
+                right[row] ^= right[column]
+    return tuple(right)
+
 
 def load_automorphism_code_18_4_2(path: Path) -> AutomorphismModel:
     code = validate_code_18_4_2(path)
@@ -63,6 +105,9 @@ def load_automorphism_code_18_4_2(path: Path) -> AutomorphismModel:
     hx = tuple(_mask(row) for row in code["Hx_row_supports"])
     hz = tuple(_mask(row) for row in code["Hz_row_supports"])
     permutations = {"I": tuple(range(n))}
+    logical_size = 2 * code["k"]
+    logical_actions = {"I": tuple(1 << (logical_size - 1 - i)
+                                  for i in range(logical_size))}
     for symbol in ("x", "y"):
         perm = tuple(code["automorphisms"][symbol]["physical_old_to_new"])
         if sorted(perm) != list(range(n)):
@@ -73,7 +118,14 @@ def load_automorphism_code_18_4_2(path: Path) -> AutomorphismModel:
             raise ValueError(f"{symbol} does not preserve the Z stabilizer span")
         permutations[symbol] = perm
         permutations[f"{symbol}^-1"] = _inverse(perm)
-    return AutomorphismModel(n, hx, hz, permutations)
+        binary_rows = code["automorphisms"][symbol]["logical_action_rows_output_by_input"]
+        if len(binary_rows) != logical_size or any(
+            len(row) != logical_size or set(row) - {"0", "1"} for row in binary_rows
+        ):
+            raise ValueError(f"{symbol} has an invalid frozen-basis logical action")
+        logical_actions[symbol] = tuple(int(row, 2) for row in binary_rows)
+        logical_actions[f"{symbol}^-1"] = _inverse_binary_rows(logical_actions[symbol])
+    return AutomorphismModel(n, hx, hz, permutations, logical_actions)
 
 
 def _permute_mask(mask: int, perm: tuple[int, ...]) -> int:

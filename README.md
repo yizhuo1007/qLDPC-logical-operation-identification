@@ -26,6 +26,8 @@ The release covers exact inference on selected finite models and scalable likeli
 
 The ideal PM and T examples evaluate a complete, finite branch space using exact fractions. The noisy PM, T, and mixed examples compute retained probability mass and report a full-likelihood interval. The BV example instead uses an approximate, uncalibrated normalized score at three syndrome boundaries and does not produce a likelihood certificate.
 
+The circuit examples use one interface for supported compiled models. The BV prefix case evaluates the first two boundaries of the same paper circuit and demonstrates a shorter input; it is not a separate workload. New mixed circuits require their own complete compiled response models. The included mixed case recovers the ordered circuit; it does not derive a net non-Clifford action.
+
 ## Quick Start
 
 ### Requirements
@@ -52,6 +54,9 @@ python examples/automorphism.py
 # Exact marginalization in a simplified noisy syndrome model
 python examples/automorphism.py --case q4-marker-noisy-exact --p-x 0.001 --p-z 0.001
 
+# Aggregate all 625 physical sequences by their net logical action
+python examples/automorphism.py --case q4-marker-noisy-exact --target net-logical-action
+
 # Ideal 15-candidate logical Pauli measurement identification
 python examples/pauli_measurement.py
 
@@ -65,11 +70,14 @@ python examples/t_injection.py --case low-noisy-scalable --record 0 --hypothesis
 # Four-candidate Bernstein-Vazirani circuit identification
 python examples/full_circuit.py --case bv-low-marker-scalable --record 0
 
+# The same compiled BV inputs, stopped after the first operation and SEC
+python examples/full_circuit.py --case bv-prefix-low-marker-scalable --record 0
+
 # One hypothesis from the eight-candidate adaptive mixed-circuit example
 python examples/full_circuit.py --case mixed-low-marker-scalable --record 0 --hypothesis I_ZI_IX
 ```
 
-Remove `--hypothesis` to evaluate every candidate for a noisy PM, T, or mixed record. Use `--record 0` through `--record 1023` to select a public noisy observation. Add `--output outputs/example.json` to save JSON.
+Remove `--hypothesis` to evaluate every candidate for a noisy PM, T, or mixed record. A single-hypothesis query reports its score without a MAP decision. Use `--record 0` through `--record 1023` to select a public noisy observation. Add `--output outputs/example.json` to save JSON. The full-circuit script also accepts `--case path/to/case.json` and `--prior uniform_targets`.
 
 **Runtime note:** The ideal examples are quick. Noisy scalable scoring is substantially more expensive. In particular, scoring just one mixed-circuit hypothesis can take minutes on a CPU. Scoring all candidates or an entire 1,024-record population can take considerably longer. Start with the default ideal examples and the single-hypothesis commands above.
 
@@ -82,16 +90,28 @@ Every example follows the same overall workflow:
 3. Calculate candidate-dependent likelihoods or approximate scores using only the specified observation channels.
 4. Return candidate scores, MAP recovery targets, and likelihood bounds where available.
 
-The scripts call the actual implementations in `src/qldpc_identification/`. For more expensive examples, precompiled response models are included so visitors can run the inference without regenerating large physical models. The scripts do **not** simply look up precomputed final candidate decisions.
+The scripts call the implementations in `src/qldpc_identification/`. For more expensive examples, precompiled fault-response models are included. Candidate scores are computed from each observation at runtime.
+
+The same full-circuit entry point is available from Python:
+
+```python
+from qldpc_identification.circuits import identify_circuit, load_circuit_case, load_observation
+
+case = load_circuit_case("examples/configs/bv72.json")
+result = identify_circuit(case, load_observation(case, 0))
+print(result["map_winners"])
+```
 
 ### Interpreting the Output
 
-- **Automorphism versus logical action:** physical sequences and their induced logical actions are different possible recovery targets. The included four-operation example identifies physical sequences under its chosen marker and SEC schedule.
+- **Automorphism versus logical action:** physical sequences and their induced logical actions are different possible recovery targets. Use `--target net-logical-action` to sum the four-operation sequence likelihoods by their frozen-basis logical action. Each action ID displays the eight binary rows of its logical map.
 - **Ordered circuit versus net action:** an ordered circuit retains operation order, whereas a net action may identify multiple sequences as equivalent.
-- **MAP recovery target:** for observation $o$, the paper scores target $c=\tau(h)$ by $Z_c(o)=\sum_{h:\tau(h)=c}\pi(h)P(o\mid h)$ and selects a target maximizing $Z_c(o)$. Strict unique identification requires the true target to be the sole maximizer. In these examples, each candidate is a distinct target with a uniform prior, so ranking candidate likelihoods gives the same decision.
+- **MAP recovery target:** for observation $o$, the paper scores target $c=\tau(h)$ by $Z_c(o)=\sum_{h:\tau(h)=c}\pi(h)P(o\mid h)$ and selects a target maximizing $Z_c(o)$. Strict unique identification requires the true target to be the sole maximizer. The default prior is uniform over physical candidates; uniform target prior divides each target's mass equally among its candidates. These priors can give different decisions.
 - **Scalable decision:** replacing $P(o\mid h)$ with an approximate likelihood $\widetilde{P}(o\mid h)$ gives an approximate target score $\widetilde{Z}_c(o)$ and an approximate MAP decision.
 - **Exact-model certification:** when valid bounds $Z_c^-\leq Z_c(o)\leq Z_c^+$ are available, target $c^*$ is certified as the exact MAP target if $Z_{c^*}^->\max_{c\ne c^*}Z_c^+$. The noisy PM, T, and mixed examples provide candidate likelihood bounds that induce these target bounds under their uniform priors.
 - **BV score:** an approximate normalized score, not a certified likelihood or a conventional decoding success probability.
+
+`inference/targets.py` accepts exact fractions, approximate candidate scores, or complete candidate likelihood intervals. With exact likelihoods, its normalized target scores are posterior probabilities; with approximations, they remain approximate normalized scores. The circuit API uses the same aggregation after evaluating every candidate. BV target scores are relative approximate scores computed from the candidate log scores. Only complete, valid full-likelihood intervals can certify an exact-model MAP target.
 
 Correctly identifying the executed operation does not establish that the quantum computation itself was free of logical errors.
 
@@ -119,6 +139,10 @@ qLDPC-logical-operation-identification/
 │   ├── pauli_measurement.py
 │   ├── t_injection.py
 │   ├── full_circuit.py
+│   ├── configs/
+│   │   ├── bv72.json
+│   │   ├── bv72-prefix.json
+│   │   └── mixed18.json
 │   ├── reproduce_population.py
 │   └── evaluate_scores.py
 ├── src/
@@ -128,8 +152,12 @@ qLDPC-logical-operation-identification/
 │       │   ├── automorphism.py
 │       │   ├── pauli_measurement.py
 │       │   └── t_injection.py
+│       ├── circuits/
+│       │   ├── case.py
+│       │   └── identify.py
 │       └── inference/
 │           ├── exact.py
+│           ├── targets.py
 │           ├── noisy_automorphism.py
 │           ├── scalable_*.py
 │           └── _*.py
@@ -148,6 +176,8 @@ qLDPC-logical-operation-identification/
 │   └── reference_results.csv
 ├── tests/
 │   ├── test_ideal.py
+│   ├── test_targets.py
+│   ├── test_circuit_api.py
 │   └── slow_reference.py
 └── .github/
     └── workflows/

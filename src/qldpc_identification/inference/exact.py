@@ -7,6 +7,7 @@ from fractions import Fraction
 from typing import Iterable
 
 from qldpc_identification.models.pauli_measurement import IdealMeasurementModel
+from qldpc_identification.inference.targets import aggregate_targets
 
 Record = tuple[int, int]
 Distributions = dict[str, dict[Record, Fraction]]
@@ -32,11 +33,10 @@ def score_record(distributions: Distributions, record: Record) -> tuple[dict[str
     """Return all candidate likelihoods and uniform-prior MAP winners."""
     scores = {candidate: law.get(record, Fraction(0))
               for candidate, law in distributions.items()}
-    best = max(scores.values())
-    if best == 0:
+    targets = aggregate_targets(scores, {candidate: candidate for candidate in scores})
+    if not targets.map_winners:
         raise ValueError("record is outside every candidate support")
-    winners = tuple(candidate for candidate, value in scores.items() if value == best)
-    return scores, winners
+    return scores, targets.map_winners
 
 
 def uniform_prior_accuracy(distributions: Distributions) -> tuple[Fraction, Fraction]:
