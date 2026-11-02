@@ -131,57 +131,21 @@ The noisy automorphism option sums independent X and Z faults exactly over the 1
 
 ```text
 qLDPC-logical-operation-identification/
-├── README.md
-├── LICENSE
-├── pyproject.toml
-├── examples/
-│   ├── automorphism.py
-│   ├── pauli_measurement.py
-│   ├── t_injection.py
-│   ├── full_circuit.py
-│   ├── configs/
-│   │   ├── bv72.json
-│   │   ├── bv72-prefix.json
-│   │   └── mixed18.json
-│   ├── reproduce_population.py
-│   └── evaluate_scores.py
-├── src/
-│   └── qldpc_identification/
-│       ├── codes.py
-│       ├── models/
-│       │   ├── automorphism.py
-│       │   ├── pauli_measurement.py
-│       │   └── t_injection.py
-│       ├── circuits/
-│       │   ├── case.py
-│       │   └── identify.py
-│       └── inference/
-│           ├── exact.py
-│           ├── targets.py
-│           ├── noisy_automorphism.py
-│           ├── scalable_*.py
-│           └── _*.py
-├── data/
+├── src/qldpc_identification/
+│   ├── models/          # Code and logical-operation models
+│   ├── inference/       # Exact, scalable, and target-level inference
+│   └── circuits/        # Logical-circuit inputs and inference interface
+│
+├── examples/            # Runnable examples for the four identification methods
+│   └── configs/         # Example circuit configurations
+│
+├── data/                # Example inputs and reference results
 │   ├── code_18_4_2/
-│   │   ├── mixed_models/*.json.gz
-│   │   ├── *.json
-│   │   ├── *.csv
-│   │   └── *.npz
-│   ├── code_72_12_6/
-│   │   └── bv/
-│   │       ├── *.stim
-│   │       ├── *.json
-│   │       ├── *.csv
-│   │       └── *.npz
-│   └── reference_results.csv
-├── tests/
-│   ├── test_ideal.py
-│   ├── test_targets.py
-│   ├── test_circuit_api.py
-│   └── slow_reference.py
-└── .github/
-    └── workflows/
-        └── tests.yml
+│   │   └── mixed_models/
+│   └── code_72_12_6/
+│       └── bv/
+│
+└── tests/               # Scientific correctness and regression tests
 ```
 
 ## Tests
