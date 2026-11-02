@@ -1,193 +1,118 @@
 # Identifying Logical Operations from Syndrome Histories for qLDPC Codes
 
-Codes for identifying executed logical operations and logical circuits from classical measurement outcomes.
+This repository implements exact and scalable methods for identifying executed logical operations from syndrome histories and auxiliary measurement outcomes. It includes examples of automorphism sequences, logical Pauli measurements, T injections, and logical circuits on bivariate bicycle (BB) codes.
 
-- **Paper:** [*Identifying Logical Operations from Syndrome Histories for qLDPC Codes*](https://arxiv.org/abs/2610.40052)
-- **Authors:** Yizhuo Tan, Shifan Xu, Yongshan Ding, and Jakub Szefer
-- **Preprint:** arXiv:2610.40052 (2026)
+**Paper:** [*Identifying Logical Operations from Syndrome Histories for qLDPC Codes*](https://arxiv.org/abs/2610.40052)
 
-## Overview
+## Identification Framework
 
-Classical measurement outcomes during quantum error correction can reveal information about which logical operations were executed. This repository demonstrates how to construct supported candidate models, evaluate the observed syndrome or auxiliary-measurement history under each candidate, and infer a logical operation or ordered logical circuit.
+Given candidate operations or circuits $h$ and a recovery-target mapping $\tau(h)=c$, the framework computes a prior-weighted likelihood for each target:
 
-The release covers exact inference on selected finite models and scalable likelihood approximations on saved noisy observations. Its code and data are organized around two BB code examples, `[[18,4,2]]` and `[[72,12,6]]`. The selected fault and observation models are documented below.
+$$
+Z_c(o) = \sum_{h:\tau(h)=c} \pi(h)P(o\mid h).
+$$
 
-## Supported Examples
+The MAP decision selects the highest-scoring target. Recovery targets can represent individual operation sequences, ordered logical circuits, or their net logical actions. The automorphism example demonstrates net-action aggregation with `--target net-logical-action` and supports target-uniform priors through `--prior uniform_targets`. Scalable inference also supports approximate scores and likelihood bounds.
 
-| Task | Code and setting | Method | Candidates |
-| --- | --- | --- | ---: |
-| Automorphism | `[[18,4,2]]`, four operations, known `Y0` marker, SEC after every operation | Exact ideal and noisy syndrome summation | 625 |
-| Logical Pauli measurement | `[[18,4,2]]`, ideal and LOW noisy | Exact branch sum and count-aware scalable likelihood | 15 |
-| T-injection measurement axis | `[[18,4,2]]`, ideal and LOW noisy | Exact branch sum and count-aware MP-JP likelihood | 6 |
-| Bernstein–Vazirani circuit | `[[72,12,6]]`, LOW noise, known `Y0` marker | Local order-two fault factors with a 1024-state frontier | 4 |
-| Mixed automorphism, T-injection, and Pauli circuit | `[[18,4,2]]`, LOW noise, marker, adaptive measurement basis | Full-circuit positive-sector likelihood | 8 |
+## Methods and Examples
 
-The ideal PM and T examples evaluate a complete, finite branch space using exact fractions. The noisy PM, T, and mixed examples compute retained probability mass and report a full-likelihood interval. The BV example instead uses an approximate, uncalibrated normalized score at three syndrome boundaries and does not produce a likelihood certificate.
+| Method | Example | Inference |
+| --- | --- | --- |
+| Automorphism identification | `[[18,4,2]]`; 625 four-operation sequences | Exact syndrome likelihoods; logical-action aggregation |
+| Logical Pauli measurement identification | `[[18,4,2]]`; 15 measurement candidates | Exact ideal and scalable noisy inference |
+| T-injection identification | `[[18,4,2]]`; 6 measurement-axis candidates | Exact ideal and scalable noisy inference |
+| Logical-circuit identification | `[[72,12,6]]` BV and `[[18,4,2]]` adaptive mixed circuits | Scalable circuit-level inference |
 
-The circuit examples use one interface for supported compiled models. The BV prefix case evaluates the first two boundaries of the same paper circuit and demonstrates a shorter input. New mixed circuits require their own complete compiled response models. The included mixed case recovers the ordered circuit.
+## Repository Structure
+
+```text
+├── src/qldpc_identification/
+│   ├── models/       # BB codes and logical operations
+│   ├── inference/    # Exact, scalable, and target-level inference
+│   └── circuits/     # Logical-circuit inference interface
+├── examples/         # Runnable examples and configurations
+├── data/             # Saved measurement outcomes and model inputs
+└── tests/            # Correctness and regression tests
+```
 
 ## Quick Start
 
-### Requirements
+Requires **Python 3.12**.
 
-- Python **3.12** (as specified in `pyproject.toml`)
-- NumPy (installed automatically with the package)
-
-The current automated checks run on Linux. Other operating systems have not yet been verified.
-
-### Installation
-
-```sh
+```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
 ```
 
-### Run the Examples
+Run one example for each method:
 
-```sh
-# Exact ideal four-operation automorphism identification
+```bash
 python examples/automorphism.py
+python examples/pauli_measurement.py
+python examples/t_injection.py
+python examples/full_circuit.py --case bv-low-marker-scalable --record 0
+```
 
-# Exact marginalization in a simplified noisy syndrome model
-python examples/automorphism.py --case q4-marker-noisy-exact --p-x 0.001 --p-z 0.001
+Additional examples:
 
-# Aggregate all 625 physical sequences by their net logical action
+```bash
+# Recover the net logical action of a four-operation sequence
 python examples/automorphism.py --case q4-marker-noisy-exact --target net-logical-action
 
-# Ideal 15-candidate logical Pauli measurement identification
-python examples/pauli_measurement.py
-
-# One candidate's noisy retained likelihood and bounds
-python examples/pauli_measurement.py --case low-noisy-scalable --record 0 --hypothesis XI
-
-# Ideal six-candidate T-injection identification
-python examples/t_injection.py
-python examples/t_injection.py --case low-noisy-scalable --record 0 --hypothesis XI
-
-# Four-candidate Bernstein-Vazirani circuit identification
-python examples/full_circuit.py --case bv-low-marker-scalable --record 0
-
-# The same compiled BV inputs, stopped after the first operation and SEC
-python examples/full_circuit.py --case bv-prefix-low-marker-scalable --record 0
-
-# One hypothesis from the eight-candidate adaptive mixed-circuit example
+# Adaptive mixed logical circuit
 python examples/full_circuit.py --case mixed-low-marker-scalable --record 0 --hypothesis I_ZI_IX
 ```
 
-Remove `--hypothesis` to evaluate every candidate for a noisy PM, T, or mixed record. A single-hypothesis query reports its score without a MAP decision. Use `--record 0` through `--record 1023` to select a public noisy observation. Add `--output outputs/example.json` to save JSON. The full-circuit script also accepts `--case path/to/case.json` and `--prior uniform_targets`.
+For noisy Pauli-measurement and T-injection examples, add `--case low-noisy-scalable --record 0 --hypothesis XI`. Use `--output` to save JSON results. Noisy scalable examples can take several minutes on a CPU.
 
-**Runtime note:** The ideal examples are quick. Noisy scalable scoring is substantially more expensive. In particular, scoring just one mixed-circuit hypothesis can take minutes on a CPU. Scoring all candidates or an entire 1,024-record population can take considerably longer. Start with the default ideal examples and the single-hypothesis commands above.
+### Logical-Circuit API
 
-## How Identification Works
-
-Every example follows the same overall workflow:
-
-1. Load the supported code, circuit, and candidate-operation definitions.
-2. Generate or load classical measurement observations.
-3. Calculate candidate-dependent likelihoods or approximate scores using only the specified observation channels.
-4. Return candidate scores, MAP recovery targets, and likelihood bounds where available.
-
-The scripts call the implementations in `src/qldpc_identification/`. For more expensive examples, precompiled fault-response models are included. Candidate scores are computed from each observation at runtime.
-
-The same full-circuit entry point is available from Python:
+The circuit inference interface is also available in Python:
 
 ```python
 from qldpc_identification.circuits import identify_circuit, load_circuit_case, load_observation
 
 case = load_circuit_case("examples/configs/bv72.json")
-result = identify_circuit(case, load_observation(case, 0))
+outcomes = load_observation(case, 0)
+result = identify_circuit(case, outcomes)
 print(result["map_winners"])
 ```
 
-### Interpreting the Output
+## Population Evaluation
 
-- **Automorphism versus logical action:** physical sequences and their induced logical actions are different possible recovery targets. Use `--target net-logical-action` to sum the four-operation sequence likelihoods by their frozen-basis logical action. Each action ID displays the eight binary rows of its logical map.
-- **Ordered circuit versus net action:** an ordered circuit retains operation order, whereas a net action may identify multiple sequences as equivalent.
-- **MAP recovery target:** for observation $o$, the paper scores target $c=\tau(h)$ by $Z_c(o)=\sum_{h:\tau(h)=c}\pi(h)P(o\mid h)$ and selects a target maximizing $Z_c(o)$. Strict unique identification requires the true target to be the sole maximizer. The default prior is uniform over physical candidates; uniform target prior divides each target's mass equally among its candidates. These priors can give different decisions.
-- **Scalable decision:** replacing $P(o\mid h)$ with an approximate likelihood $\widetilde{P}(o\mid h)$ gives an approximate target score $\widetilde{Z}_c(o)$ and an approximate MAP decision.
-- **Exact-model certification:** The noisy PM, T, and mixed examples provide candidate likelihood bounds that aggregate into target bounds under the chosen prior. A target is certified as the unique exact MAP target when its lower bound exceeds every competing target's upper bound:
+Evaluate saved noisy classical measurement outcomes and compare the resulting scores with reference labels:
 
-```math
-\begin{aligned}
-Z_c^{-} &\leq Z_c(o) \leq Z_c^{+} \quad (c \in \mathcal{C}), \\
-Z_{c^{\star}}^{-} &> \max_{d \ne c^{\star}} Z_d^{+}.
-\end{aligned}
-```
-
-- **BV score:** an approximate normalized score, not a certified likelihood or a conventional decoding success probability.
-
-`inference/targets.py` accepts exact fractions, approximate candidate scores, or complete candidate likelihood intervals. With exact likelihoods, its normalized target scores are posterior probabilities; with approximations, they remain approximate normalized scores. The circuit API uses the same aggregation after evaluating every candidate. BV target scores are relative approximate scores computed from the candidate log scores. Only complete, valid full-likelihood intervals can certify an exact-model MAP target.
-
-Correctly identifying the executed operation does not establish that the quantum computation itself was free of logical errors.
-
-## Optional Population Evaluation
-
-To stream a population run, use `python examples/reproduce_population.py --case pm --output outputs/pm_scores.csv`. The case may be `pm`, `t`, `bv`, or `mixed`; `--start`, `--stop`, and `--candidate` let you divide a long run into smaller jobs. The script caches each model within its candidate family and writes each score immediately. After combining complete candidate scores, `examples/evaluate_scores.py` compares them with the separate `*_truth.csv` labels. For example:
-
-```sh
+```bash
+python examples/reproduce_population.py --case pm --output outputs/pm_scores.csv
 python examples/evaluate_scores.py --scores outputs/pm_scores.csv --truth data/code_18_4_2/pm_low_truth.csv --candidates 15
 ```
 
-The truth CSVs are distributed for **evaluation only** and are never read by the scorers. The population script emits an approximate normalized score for BV and retained likelihoods plus full bounds for PM, T, and mixed. This workflow is optional and is not required to verify that the four example families run.
-
-The noisy automorphism option sums independent X and Z faults exactly over the 14-bit syndrome quotient with perfect SEC after each operation. 
-
-## Repository Layout
-
-```text
-qLDPC-logical-operation-identification/
-├── src/qldpc_identification/
-│   ├── models/          # Code and logical-operation models
-│   ├── inference/       # Exact, scalable, and target-level inference
-│   └── circuits/        # Logical-circuit inputs and inference interface
-│
-├── examples/            # Runnable examples for the four identification methods
-│   └── configs/         # Example circuit configurations
-│
-├── data/                # Example inputs and reference results
-│   ├── code_18_4_2/
-│   │   └── mixed_models/
-│   └── code_72_12_6/
-│       └── bv/
-│
-└── tests/               # Scientific correctness and regression tests
-```
+The population scripts also support T injection, BV, and mixed-circuit examples.
 
 ## Tests
 
-Run the quick checks after installation:
-
-```sh
+```bash
 python -m unittest discover -s tests -v
-```
-
-The quick suite checks ideal BB/operation relations, exact likelihoods on selected finite instances, and frozen single-query PM/T scalable outputs. The optional slower suite checks reference outputs for BV and mixed circuits:
-
-```sh
+# Optional slower circuit-reference checks
 PYTHONPATH=src python tests/slow_reference.py
 ```
 
-
 ## Citation
 
-If you use this implementation or build on the identification methods, please cite [the accompanying paper](https://arxiv.org/abs/2610.40052):
+If you use this code or the identification methods, please cite the [paper](https://arxiv.org/abs/2610.40052):
 
 ```bibtex
 @misc{tan2026identifying,
-  title        = {Identifying Logical Operations from Syndrome Histories for qLDPC Codes},
-  author       = {Tan, Yizhuo and Xu, Shifan and Ding, Yongshan and Szefer, Jakub},
-  year         = {2026},
-  eprint       = {2610.40052},
+  title         = {Identifying Logical Operations from Syndrome Histories for qLDPC Codes},
+  author        = {Tan, Yizhuo and Xu, Shifan and Ding, Yongshan and Szefer, Jakub},
+  year          = {2026},
+  eprint        = {2610.40052},
   archivePrefix = {arXiv},
-  primaryClass = {quant-ph}
+  primaryClass  = {quant-ph}
 }
 ```
 
 ## License
 
-This package is released under the [MIT License](LICENSE). Third-party dependencies retain their own licenses.
-
-## Questions
-
-Please open a GitHub issue for questions about the examples, installation, or methods.
+Released under the [MIT License](LICENSE).
