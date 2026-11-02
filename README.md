@@ -1,18 +1,16 @@
 # Identifying Logical Operations from Syndrome Histories for qLDPC Codes
 
-Reference implementation and runnable Python examples for identifying executed logical operations and logical circuits from classical measurement outcomes.
+Codes for identifying executed logical operations and logical circuits from classical measurement outcomes.
 
 - **Paper:** [*Identifying Logical Operations from Syndrome Histories for qLDPC Codes*](https://arxiv.org/abs/2610.40052)
 - **Authors:** Yizhuo Tan, Shifan Xu, Yongshan Ding, and Jakub Szefer
 - **Preprint:** arXiv:2610.40052 (2026)
 
-> **Scope.** This is a lightweight method reference implementation, not a complete reproduction package for the paper's large-scale experiments.
-
 ## Overview
 
-Classical measurement outcomes collected during quantum error correction can reveal information about which logical operations were executed. This repository demonstrates how to construct supported candidate models, evaluate the observed syndrome or auxiliary-measurement history under each candidate, and infer a logical operation or ordered logical circuit.
+Classical measurement outcomes during quantum error correction can reveal information about which logical operations were executed. This repository demonstrates how to construct supported candidate models, evaluate the observed syndrome or auxiliary-measurement history under each candidate, and infer a logical operation or ordered logical circuit.
 
-The release covers exact inference on selected finite models and scalable likelihood approximations on saved noisy observations. Its code and data are organized around two BB codes, `[[18,4,2]]` and `[[72,12,6]]`. The selected fault and observation models are documented below.
+The release covers exact inference on selected finite models and scalable likelihood approximations on saved noisy observations. Its code and data are organized around two BB code examples, `[[18,4,2]]` and `[[72,12,6]]`. The selected fault and observation models are documented below.
 
 ## Supported Examples
 
@@ -26,7 +24,7 @@ The release covers exact inference on selected finite models and scalable likeli
 
 The ideal PM and T examples evaluate a complete, finite branch space using exact fractions. The noisy PM, T, and mixed examples compute retained probability mass and report a full-likelihood interval. The BV example instead uses an approximate, uncalibrated normalized score at three syndrome boundaries and does not produce a likelihood certificate.
 
-The circuit examples use one interface for supported compiled models. The BV prefix case evaluates the first two boundaries of the same paper circuit and demonstrates a shorter input; it is not a separate workload. New mixed circuits require their own complete compiled response models. The included mixed case recovers the ordered circuit; it does not derive a net non-Clifford action.
+The circuit examples use one interface for supported compiled models. The BV prefix case evaluates the first two boundaries of the same paper circuit and demonstrates a shorter input. New mixed circuits require their own complete compiled response models. The included mixed case recovers the ordered circuit.
 
 ## Quick Start
 
@@ -133,7 +131,7 @@ python examples/evaluate_scores.py --scores outputs/pm_scores.csv --truth data/c
 
 The truth CSVs are distributed for **evaluation only** and are never read by the scorers. The population script emits an approximate normalized score for BV and retained likelihoods plus full bounds for PM, T, and mixed. This workflow is optional and is not required to verify that the four example families run.
 
-The noisy automorphism option sums independent X and Z faults exactly over the 14-bit syndrome quotient with perfect SEC after each operation. It illustrates Exact-Sum inference for this selected noise model; it does not reproduce the paper's circuit-level fault curves. `--p-x` and `--p-z` set the two fault rates. The ideal automorphism example reproduces unique identification of all 625 four-operation sequences.
+The noisy automorphism option sums independent X and Z faults exactly over the 14-bit syndrome quotient with perfect SEC after each operation. 
 
 ## Repository Layout
 
@@ -170,7 +168,6 @@ The quick suite checks ideal BB/operation relations, exact likelihoods on select
 PYTHONPATH=src python tests/slow_reference.py
 ```
 
-The slow suite can take several minutes. GitHub Actions currently runs the quick tests and selected automorphism, PM, and T commands on Ubuntu; it does not automatically execute every full-circuit path.
 
 ## Citation
 
